@@ -48,6 +48,12 @@ contract GuildSystem is System {
     error GuildSystem__CannotDemoteBelowZero(uint256 characterId);
     error GuildSystem__OnlyGuildMaster();
 
+    modifier onlyRank(Rank minRank) {
+        uint256 characterId = AddressToCharacterId.getCharacterId(_msgSender());
+        require(GuildMembers.getRank(characterId) >= uint256(minRank), "GuildSystem - Only Rank can call");
+        _;
+    }
+
     function activate(uint256 characterId) external {
         console.logString("GuildSystem - calling activate");
         address characterAddress = CharactersTable.getCharacterAddress(characterId);
@@ -63,6 +69,16 @@ contract GuildSystem is System {
         }
         GuildMembers.setRank(characterId, uint256(Rank.Master));
 
+    }
+
+    function promote(uint256 characterId) public onlyRank(Rank.Officer) {
+        console.logString("GuildSystem - calling promote");
+        uint256 rank = GuildMembers.getRank(characterId);
+        require(rank + 1 < uint8(Rank.Master), "GuildSystem - Cannot promote to Master");
+        if(rank == 0) {
+            _addNewMember(characterId);
+        }
+        GuildMembers.setRank(characterId, rank + 1);
     }
 
     function isMember(uint256 characterId) public view returns (bool) {

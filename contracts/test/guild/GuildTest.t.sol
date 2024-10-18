@@ -81,14 +81,19 @@ contract GuildTest is MudTest, Assertions {
     function test_activate() external {
         console.logString("test_activate - getting member");
         bool _isMember = world.dreamin__isMember(guildMasterCharacter.characterId);
-        // bool _isMember = GuildMembers.getRank(guildMasterCharacter.characterId) > 0;
+        // bool _isMember = GuildMembers.getRank(guildMasterCharacter.characterId) > 0; // passes
         console.logString("test_activate - isMember:");
         console.logBool(_isMember);
         assertTrue(_isMember, "GuildMaster should be a member");
-        // uint256 activatorRank = world.dreamin__getRank(guildMasterCharacter.characterId);
-        // console.logString("test_activate - activatorRank:");
-        // console.logUint(activatorRank);
-        // assertEq(activatorRank, uint256(Rank.Master), "Activator should be a member");
+    }
+
+    function test_isMember() external {
+        vm.startBroadcast(guildMaster);
+        world.dreamin__promote(characters[0].characterId);
+
+        assertTrue(world.dreamin__isMember(characters[0].characterId), "Character 0 should be a member");
+        assertTrue(!world.dreamin__isMember(characters[1].characterId), "Character 1 should NOT be a member");
+        vm.stopBroadcast();
     }
 
 }

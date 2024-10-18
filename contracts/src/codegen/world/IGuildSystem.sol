@@ -14,6 +14,8 @@ interface IGuildSystem {
 
   function dreamin__activate(uint256 characterId) external;
 
+  function dreamin__promote(uint256 characterId) external;
+
   function dreamin__isMember(uint256 characterId) external view returns (bool);
 
   function dreamin__getMembers() external view returns (uint256[] memory);
